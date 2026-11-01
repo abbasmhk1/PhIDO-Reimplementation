@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phido"
+version = "0.1.0"
+description = "PhIDO rebuild: LLM-assisted photonic IC design pipeline (interpreter + designer first)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2", "pyyaml"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
