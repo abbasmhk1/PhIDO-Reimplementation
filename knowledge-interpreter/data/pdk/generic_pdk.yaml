@@ -1,0 +1,172 @@
+name: generic_c_band_demo
+# Toy PDK for development. `properties` are illustrative capability limits (max supported
+# value), NOT foundry data. Replace with real cells + docstrings when you have them.
+# `ports: "LxR"` = L left (input-side) ports, R right (output-side) ports, numbered
+# counter-clockwise: left bottom->top, then right top->bottom.
+cells:
+  - name: straight
+    description: Straight single-mode waveguide section.
+    functionality: [waveguide, routing, interconnect]
+    aka: [waveguide, straight waveguide]
+    technology: passive
+    ports: "1x1"
+    params:
+      length: {default: 10.0, min: 0.1, max: 100000.0, unit: um, aliases: [waveguide_length]}
+
+  - name: bend_euler
+    description: 90 degree Euler waveguide bend.
+    functionality: [bend, routing]
+    aka: [90 degree bend, turn]
+    technology: passive
+    ports: "1x1"
+    params:
+      radius: {default: 10.0, min: 5.0, max: 100.0, unit: um, aliases: [bend_radius]}
+
+  - name: mmi_1x2
+    description: Multimode interference coupler, one input and two outputs; 50/50 power splitter or combiner.
+    functionality: [splitter, combiner, power splitter]
+    aka: [multimode interference, 1x2 splitter, 3 dB splitter]
+    technology: passive
+    ports: "1x2"
+    params:
+      length: {default: 30.0, min: 5.0, max: 200.0, unit: um, aliases: [mmi_length]}
+
+  - name: mmi_2x2
+    description: Multimode interference coupler, two inputs and two outputs; 50/50 coupler.
+    functionality: [coupler, splitter, combiner, power splitter]
+    aka: [multimode interference, 2x2 coupler, 3 dB coupler]
+    technology: passive
+    ports: "2x2"
+    params:
+      length: {default: 40.0, min: 5.0, max: 200.0, unit: um, aliases: [mmi_length]}
+
+  - name: y_branch
+    description: Y-junction waveguide splitter, one input and two outputs.
+    functionality: [splitter, combiner]
+    aka: [y junction, y splitter]
+    technology: passive
+    ports: "1x2"
+
+  - name: directional_coupler
+    description: Evanescent directional coupler with two inputs and two outputs.
+    functionality: [coupler, splitter]
+    aka: [evanescent coupler]
+    technology: passive
+    ports: "2x2"
+    params:
+      gap: {default: 0.2, min: 0.1, max: 1.0, unit: um}
+      length: {default: 20.0, min: 0.0, max: 500.0, unit: um, aliases: [coupling_length]}
+
+  - name: mzi_1x2_heater
+    description: Mach-Zehnder interferometer with a thermo-optic heater phase shifter, one input and two outputs.
+    functionality: [switch, modulator, tunable splitter, phase modulation]
+    aka: [thermo-optic mzi, tunable splitter]
+    technology: thermo-optic
+    ports: "1x2"
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+    properties: {modulation_bandwidth_ghz: 0.00003}
+
+  - name: mzi_2x2_heater
+    description: Mach-Zehnder interferometer with a thermo-optic heater phase shifter, two inputs and two outputs.
+    functionality: [switch, modulator, tunable coupler, phase modulation]
+    aka: [thermo-optic mzi, 2x2 switch]
+    technology: thermo-optic
+    ports: "2x2"
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+    properties: {modulation_bandwidth_ghz: 0.00003}
+
+  - name: mzi_1x2_pindiode
+    description: Mach-Zehnder interferometer with PIN diode carrier-injection phase shifters, one input and two outputs.
+    functionality: [modulator, switch, phase modulation]
+    aka: [pin mzi, electro-optic mzi, pin diode phase shifter]
+    technology: carrier injection
+    ports: "1x2"
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+    properties: {modulation_bandwidth_ghz: 1.0}
+
+  - name: mzi_2x2_pindiode
+    description: Mach-Zehnder interferometer with PIN diode carrier-injection phase shifters, two inputs and two outputs.
+    functionality: [modulator, switch, phase modulation]
+    aka: [pin mzi, electro-optic mzi, pin diode phase shifter]
+    technology: carrier injection
+    ports: "2x2"
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+    properties: {modulation_bandwidth_ghz: 1.0}
+
+  - name: mzi_2x2_pndiode
+    description: Mach-Zehnder interferometer with PN diode carrier-depletion phase shifters, two inputs and two outputs; high-speed modulator.
+    functionality: [modulator, high-speed modulation, phase modulation]
+    aka: [pn mzi, depletion modulator, pn diode phase shifter]
+    technology: carrier depletion
+    ports: "2x2"
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+    properties: {modulation_bandwidth_ghz: 30.0}
+
+  - name: ring_single
+    description: All-pass ring resonator coupled to one bus waveguide.
+    functionality: [resonator, filter]
+    aka: [ring resonator, all-pass ring, microring]
+    technology: passive
+    ports: "1x1"
+    params:
+      radius: {default: 10.0, min: 3.0, max: 100.0, unit: um, aliases: [ring_radius]}
+      gap: {default: 0.2, min: 0.1, max: 1.0, unit: um}
+
+  - name: ring_double
+    description: Add-drop ring resonator coupled to two bus waveguides, two inputs and two outputs.
+    functionality: [resonator, filter, add-drop filter, wavelength demultiplexer]
+    aka: [ring resonator, add-drop ring, microring]
+    technology: passive
+    ports: "2x2"
+    params:
+      radius: {default: 10.0, min: 3.0, max: 100.0, unit: um, aliases: [ring_radius]}
+      gap: {default: 0.2, min: 0.1, max: 1.0, unit: um}
+
+  - name: heater
+    description: Thermo-optic phase shifter with a heating element on a straight waveguide.
+    functionality: [phase shifter, phase modulation, tuning]
+    aka: [thermo-optic phase shifter, heater phase shifter]
+    technology: thermo-optic
+    ports: "1x1"
+    params:
+      length: {default: 100.0, min: 5.0, max: 2000.0, unit: um}
+    properties: {modulation_bandwidth_ghz: 0.00003}
+
+  - name: pn_phase_shifter
+    description: Carrier-depletion PN diode phase shifter for high-speed modulation on a straight waveguide.
+    functionality: [phase shifter, phase modulation, modulator]
+    aka: [pn phase shifter, depletion phase shifter]
+    technology: carrier depletion
+    ports: "1x1"
+    params:
+      length: {default: 1000.0, min: 50.0, max: 5000.0, unit: um}
+    properties: {modulation_bandwidth_ghz: 30.0}
+
+  - name: edge_coupler
+    description: Edge coupler for fiber-to-chip light coupling at the chip facet; usable as input or output.
+    functionality: [fiber coupling, io, input, output]
+    aka: [fiber coupler, facet coupler, inverse taper]
+    technology: passive
+    ports:
+      - {name: o1, side: any, y: 0.5}
+
+  - name: grating_coupler
+    description: Grating coupler for vertical fiber-to-chip light coupling; usable as input or output.
+    functionality: [fiber coupling, io, input, output]
+    aka: [fiber coupler, vertical coupler]
+    technology: passive
+    ports:
+      - {name: o1, side: any, y: 0.5}
+
+  - name: photodetector
+    description: Waveguide photodetector that converts light into photocurrent; one optical input.
+    functionality: [detector, receiver, photodiode]
+    aka: [pd, photodiode, germanium detector]
+    technology: active
+    ports: "1x0"
+    properties: {detection_bandwidth_ghz: 40.0}
