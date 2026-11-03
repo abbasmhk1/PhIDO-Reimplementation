@@ -1,0 +1,58 @@
+# Gold structures for interpreter evaluation (our own prompts, not the PhIDO testbench).
+# Kinds are compared after canonicalisation; ports are not compared in v0.
+- id: L1-mzi-heater
+  level: 1
+  prompt: A 2x2 MZI with a thermo-optic phase shifter in each arm.
+  nodes: [{id: a, kind: mzi}]
+- id: L1-ring
+  level: 1
+  prompt: A single ring resonator with a 10 um radius.
+  nodes: [{id: a, kind: ring}]
+- id: L2-mmi-mmi
+  level: 2
+  prompt: A 1x2 MMI followed by a 2x2 MMI.
+  nodes: [{id: a, kind: mmi}, {id: b, kind: mmi}]
+  edges: [{src: a, dst: b}]
+- id: L2-two-mzi
+  level: 2
+  prompt: Two MZIs in series, each modulating at up to 10 GHz, with 2 inputs and 2 outputs.
+  nodes: [{id: a, kind: mzi}, {id: b, kind: mzi}]
+  edges: [{src: a, dst: b}]
+- id: L3-splitter-1x4
+  level: 3
+  prompt: A 1x4 splitter built from three 1x2 MMIs, where the first MMI feeds the other two.
+  nodes: [{id: a, kind: mmi}, {id: b, kind: mmi}, {id: c, kind: mmi}]
+  edges: [{src: a, dst: b}, {src: a, dst: c}]
+- id: L3-edge-mzi-pd
+  level: 3
+  prompt: An edge coupler feeds an MZI, which feeds a photodetector.
+  nodes: [{id: a, kind: edge_coupler}, {id: b, kind: mzi}, {id: c, kind: photodetector}]
+  edges: [{src: a, dst: b}, {src: b, dst: c}]
+- id: L3-four-mzi-grating
+  level: 3
+  prompt: Four MZIs cascaded in series, then a grating coupler at the output.
+  nodes:
+    - {id: a, kind: mzi}
+    - {id: b, kind: mzi}
+    - {id: c, kind: mzi}
+    - {id: d, kind: mzi}
+    - {id: e, kind: grating_coupler}
+  edges: [{src: a, dst: b}, {src: b, dst: c}, {src: c, dst: d}, {src: d, dst: e}]
+- id: L4-splitter-1x8
+  level: 4
+  prompt: A 1x8 power splitter tree made from 1x2 MMIs.
+  nodes:
+    - {id: n1, kind: mmi}
+    - {id: n2, kind: mmi}
+    - {id: n3, kind: mmi}
+    - {id: n4, kind: mmi}
+    - {id: n5, kind: mmi}
+    - {id: n6, kind: mmi}
+    - {id: n7, kind: mmi}
+  edges:
+    - {src: n1, dst: n2}
+    - {src: n1, dst: n3}
+    - {src: n2, dst: n4}
+    - {src: n2, dst: n5}
+    - {src: n3, dst: n6}
+    - {src: n3, dst: n7}

@@ -1,0 +1,45 @@
+# Gold inputs for designer evaluation: templates in, acceptable PDK cells out.
+# This tests the designer in isolation (no interpreter, no upstream errors).
+- id: D-cascade-mzi-heater
+  level: 2
+  template:
+    nodes:
+      - {id: N1, kind: mzi, ports: "2x2", description: thermo-optic phase shifter}
+      - {id: N2, kind: mzi, ports: "2x2", description: thermo-optic phase shifter}
+    edges: [{src: N1, dst: N2}]
+  expect: {N1: [mzi_2x2_heater], N2: [mzi_2x2_heater]}
+- id: D-splitter-1x4
+  level: 3
+  template:
+    nodes:
+      - {id: N1, kind: mmi, ports: "1x2"}
+      - {id: N2, kind: mmi, ports: "1x2"}
+      - {id: N3, kind: mmi, ports: "1x2"}
+    edges: [{src: N1, dst: N2}, {src: N1, dst: N3}]
+  expect: {N1: [mmi_1x2], N2: [mmi_1x2], N3: [mmi_1x2]}
+- id: D-fast-modulator
+  level: 1
+  template:
+    nodes:
+      - {id: M1, kind: mzi, ports: "2x2", params: {modulation_bandwidth_ghz: 10}}
+  expect: {M1: [mzi_2x2_pndiode]}
+- id: D-mmi-mmi
+  level: 2
+  template:
+    nodes:
+      - {id: A, kind: mmi, ports: "1x2"}
+      - {id: B, kind: mmi, ports: "2x2"}
+    edges: [{src: A, dst: B}]
+  expect: {A: [mmi_1x2], B: [mmi_2x2]}
+- id: D-edge-mzi-pd
+  level: 3
+  template:
+    nodes:
+      - {id: IN1, kind: edge_coupler}
+      - {id: M1, kind: mzi, ports: "2x2"}
+      - {id: PD1, kind: photodetector}
+    edges: [{src: IN1, dst: M1}, {src: M1, dst: PD1}]
+  expect:
+    IN1: [edge_coupler]
+    M1: [mzi_2x2_heater, mzi_2x2_pindiode, mzi_2x2_pndiode]
+    PD1: [photodetector]

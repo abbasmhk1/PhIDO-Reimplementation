@@ -1,0 +1,5 @@
+nodes:
+  - {id: A, kind: mmi, ports: "1x2"}
+  - {id: B, kind: mmi, ports: "2x2"}
+edges:
+  - {src: A, dst: B}
