@@ -467,7 +467,7 @@ If you use this repository in academic work, please cite the original research p
 ## Authors & Contributors
 
 - **[َAbbas Mohammadi Kian]** — Co-developer
-- **[Co-Author: Reza Hosseini]** — Co-developer
+- **[Co-Author: Reza Hosseiny]** — Co-developer
 
 
 ## License
