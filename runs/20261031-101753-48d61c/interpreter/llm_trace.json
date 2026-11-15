@@ -1,0 +1,7 @@
+[
+  {
+    "attempt": 0,
+    "raw": "{\n  \"blocks\": [\n    {\n      \"name\": \"mzi1\",\n      \"kind\": \"mzi\",\n      \"ports\": \"2x2\",\n      \"description\": \"heater\"\n    },\n    {\n      \"name\": \"mzi2\",\n      \"kind\": \"mzi\",\n      \"ports\": \"2x2\",\n      \"description\": \"heater\"\n    },\n    {\n      \"name\": \"mzi3\",\n      \"kind\": \"mzi\",\n      \"ports\": \"2x2\",\n      \"description\": \"heater\"\n    },\n    {\n      \"name\": \"mzi4\",\n      \"kind\": \"mzi\",\n      \"ports\": \"2x2\",\n      \"description\": \"heater\"\n    },\n    {\n      \"name\": \"photodetector1\",\n      \"kind\": \"photodetector\"\n    }\n  ],\n  \"links\": [\n    {\n      \"src\": \"mzi1\",\n      \"dst\": \"mzi2\"\n    },\n    {\n      \"src\": \"mzi2\",\n      \"dst\": \"mzi3\"\n    },\n    {\n      \"src\": \"mzi3\",\n      \"dst\": \"mzi4\"\n    },\n    {\n      \"src\": \"mzi4\",\n      \"dst\": \"photodetector1\"\n    }\n  ]\n}",
+    "ok": true
+  }
+]

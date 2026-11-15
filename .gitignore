@@ -1,0 +1,22 @@
+
+# more run outputs and local experiment files
+layouts/
+fails.txt
+compare*.md
+compare*.err
+/*.csv
+/*.png
+
+# python / environments
+*.py[cod]
+.venv/
+build/
+dist/
+
+# backups and archives
+*.tgz
+*.zip
+
+# secrets: never commit keys
+.env
+*.env

@@ -1,0 +1,250 @@
+name: generic_c_band_demo
+# Toy PDK for development - NOT foundry data.
+#  - `properties`: illustrative capability limits (max supported value).
+#  - `model` / `model_params`: analytic circuit model used by the verification stage
+#    (demo constants: neff 2.4, ng 4.2, 2 dB/cm loss; see stages/verify/models.py).
+#  - `layout`: gdsfactory component used by the layout stage. Structural layout only:
+#    pin/pn MZI cells reuse the passive MZI geometry (no doping layers); y_branch has no
+#    gdsfactory equivalent and becomes a black box. `footprint` is an approximate size (um).
+#  - `ports: "LxR"` = L left (input-side) ports, R right (output-side) ports, numbered
+#    counter-clockwise: left bottom->top, then right top->bottom.
+cells:
+  - name: straight
+    description: Straight single-mode waveguide section.
+    functionality: [waveguide, routing, interconnect]
+    aka: [waveguide, straight waveguide]
+    technology: passive
+    ports: "1x1"
+    model: straight
+    footprint: [20, 4]
+    layout: {component: straight, params: {length: length}}
+    params:
+      length: {default: 10.0, min: 0.1, max: 100000.0, unit: um, aliases: [waveguide_length]}
+
+  - name: bend_euler
+    description: 90 degree Euler waveguide bend.
+    functionality: [bend, routing]
+    aka: [90 degree bend, turn]
+    technology: passive
+    ports: "1x1"
+    model: bend
+    footprint: [12, 12]
+    layout: {component: bend_euler, params: {radius: radius}}
+    params:
+      radius: {default: 10.0, min: 5.0, max: 100.0, unit: um, aliases: [bend_radius]}
+
+  - name: mmi_1x2
+    description: Multimode interference coupler, one input and two outputs; 50/50 power splitter or combiner.
+    functionality: [splitter, combiner, power splitter]
+    aka: [multimode interference, 1x2 splitter, 3 dB splitter]
+    technology: passive
+    ports: "1x2"
+    model: mmi_1x2
+    model_params: {excess_loss_db: 0.3}
+    footprint: [40, 8]
+    layout: {component: mmi1x2, params: {length_mmi: length}}
+    params:
+      length: {default: 30.0, min: 5.0, max: 200.0, unit: um, aliases: [mmi_length]}
+
+  - name: mmi_2x2
+    description: Multimode interference coupler, two inputs and two outputs; 50/50 coupler.
+    functionality: [coupler, splitter, combiner, power splitter]
+    aka: [multimode interference, 2x2 coupler, 3 dB coupler]
+    technology: passive
+    ports: "2x2"
+    model: coupler_2x2
+    model_params: {kappa2: 0.5, excess_loss_db: 0.3}
+    footprint: [40, 8]
+    layout: {component: mmi2x2, params: {length_mmi: length}}
+    params:
+      length: {default: 40.0, min: 5.0, max: 200.0, unit: um, aliases: [mmi_length]}
+
+  - name: y_branch
+    description: Y-junction waveguide splitter, one input and two outputs.
+    functionality: [splitter, combiner]
+    aka: [y junction, y splitter]
+    technology: passive
+    ports: "1x2"
+    model: mmi_1x2
+    model_params: {excess_loss_db: 0.2}
+    footprint: [30, 10]
+
+  - name: directional_coupler
+    description: Evanescent directional coupler with two inputs and two outputs.
+    functionality: [coupler, splitter]
+    aka: [evanescent coupler]
+    technology: passive
+    ports: "2x2"
+    model: directional_coupler
+    model_params: {full_transfer_length_um: 40.0}
+    footprint: [40, 10]
+    layout: {component: coupler, params: {gap: gap, length: length}}
+    params:
+      gap: {default: 0.2, min: 0.1, max: 1.0, unit: um}
+      length: {default: 20.0, min: 0.0, max: 500.0, unit: um, aliases: [coupling_length]}
+
+  - name: mzi_1x2_heater
+    description: Mach-Zehnder interferometer with a thermo-optic heater phase shifter, one input and two outputs.
+    functionality: [switch, modulator, tunable splitter, phase modulation]
+    aka: [thermo-optic mzi, tunable splitter]
+    technology: thermo-optic
+    ports: "1x2"
+    model: mzi_1x2
+    footprint: [110, 60]
+    layout:
+      component: mzi
+      settings: {splitter: mmi1x2, combiner: mmi2x2, port_e1_splitter: o2, port_e0_splitter: o3, port_e1_combiner: o3, port_e0_combiner: o4}
+      params: {delta_length: delta_length}
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+      phase: {default: 0.0, min: -6.2832, max: 6.2832, unit: rad, aliases: [phase_shift]}
+    properties: {modulation_bandwidth_ghz: 0.00003}
+
+  - name: mzi_2x2_heater
+    description: Mach-Zehnder interferometer with a thermo-optic heater phase shifter, two inputs and two outputs.
+    functionality: [switch, modulator, tunable coupler, phase modulation]
+    aka: [thermo-optic mzi, 2x2 switch]
+    technology: thermo-optic
+    ports: "2x2"
+    model: mzi_2x2
+    footprint: [290, 80]
+    layout: {component: mzi2x2_2x2_phase_shifter, params: {delta_length: delta_length}}
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+      phase: {default: 0.0, min: -6.2832, max: 6.2832, unit: rad, aliases: [phase_shift]}
+    properties: {modulation_bandwidth_ghz: 0.00003}
+
+  - name: mzi_1x2_pindiode
+    description: Mach-Zehnder interferometer with PIN diode carrier-injection phase shifters, one input and two outputs.
+    functionality: [modulator, switch, phase modulation]
+    aka: [pin mzi, electro-optic mzi, pin diode phase shifter]
+    technology: carrier injection
+    ports: "1x2"
+    model: mzi_1x2
+    footprint: [110, 60]
+    layout:
+      component: mzi
+      settings: {splitter: mmi1x2, combiner: mmi2x2, port_e1_splitter: o2, port_e0_splitter: o3, port_e1_combiner: o3, port_e0_combiner: o4}
+      params: {delta_length: delta_length}
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+      phase: {default: 0.0, min: -6.2832, max: 6.2832, unit: rad, aliases: [phase_shift]}
+    properties: {modulation_bandwidth_ghz: 1.0}
+
+  - name: mzi_2x2_pindiode
+    description: Mach-Zehnder interferometer with PIN diode carrier-injection phase shifters, two inputs and two outputs.
+    functionality: [modulator, switch, phase modulation]
+    aka: [pin mzi, electro-optic mzi, pin diode phase shifter]
+    technology: carrier injection
+    ports: "2x2"
+    model: mzi_2x2
+    footprint: [110, 60]
+    layout: {component: mzi2x2_2x2, params: {delta_length: delta_length}}
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+      phase: {default: 0.0, min: -6.2832, max: 6.2832, unit: rad, aliases: [phase_shift]}
+    properties: {modulation_bandwidth_ghz: 1.0}
+
+  - name: mzi_2x2_pndiode
+    description: Mach-Zehnder interferometer with PN diode carrier-depletion phase shifters, two inputs and two outputs; high-speed modulator.
+    functionality: [modulator, high-speed modulation, phase modulation]
+    aka: [pn mzi, depletion modulator, pn diode phase shifter]
+    technology: carrier depletion
+    ports: "2x2"
+    model: mzi_2x2
+    footprint: [110, 60]
+    layout: {component: mzi2x2_2x2, params: {delta_length: delta_length}}
+    params:
+      delta_length: {default: 0.0, min: 0.0, max: 1000.0, unit: um, aliases: [path_length_difference, path_difference]}
+      phase: {default: 0.0, min: -6.2832, max: 6.2832, unit: rad, aliases: [phase_shift]}
+    properties: {modulation_bandwidth_ghz: 30.0}
+
+  - name: ring_single
+    description: All-pass ring resonator coupled to one bus waveguide.
+    functionality: [resonator, filter]
+    aka: [ring resonator, all-pass ring, microring]
+    technology: passive
+    ports: "1x1"
+    model: ring_single
+    footprint: [35, 26]
+    layout: {component: ring_single, params: {radius: radius, gap: gap}}
+    params:
+      radius: {default: 10.0, min: 3.0, max: 100.0, unit: um, aliases: [ring_radius]}
+      gap: {default: 0.2, min: 0.1, max: 1.0, unit: um}
+
+  - name: ring_double
+    description: Add-drop ring resonator coupled to two bus waveguides, two inputs and two outputs.
+    functionality: [resonator, filter, add-drop filter, wavelength demultiplexer]
+    aka: [ring resonator, add-drop ring, microring]
+    technology: passive
+    ports: "2x2"
+    model: ring_double
+    footprint: [30, 26]
+    layout: {component: ring_double, params: {radius: radius, gap: gap}}
+    params:
+      radius: {default: 10.0, min: 3.0, max: 100.0, unit: um, aliases: [ring_radius]}
+      gap: {default: 0.2, min: 0.1, max: 1.0, unit: um}
+
+  - name: heater
+    description: Thermo-optic phase shifter with a heating element on a straight waveguide.
+    functionality: [phase shifter, phase modulation, tuning]
+    aka: [thermo-optic phase shifter, heater phase shifter]
+    technology: thermo-optic
+    ports: "1x1"
+    model: phase_shifter
+    footprint: [140, 12]
+    layout: {component: straight_heater_metal, params: {length: length}}
+    params:
+      length: {default: 100.0, min: 5.0, max: 2000.0, unit: um}
+      phase: {default: 0.0, min: -6.2832, max: 6.2832, unit: rad, aliases: [phase_shift]}
+    properties: {modulation_bandwidth_ghz: 0.00003}
+
+  - name: pn_phase_shifter
+    description: Carrier-depletion PN diode phase shifter for high-speed modulation on a straight waveguide.
+    functionality: [phase shifter, phase modulation, modulator]
+    aka: [pn phase shifter, depletion phase shifter]
+    technology: carrier depletion
+    ports: "1x1"
+    model: phase_shifter
+    model_params: {insertion_loss_db: 2.0}
+    footprint: [210, 24]
+    layout: {component: straight_pn, params: {length: length}}
+    params:
+      length: {default: 1000.0, min: 50.0, max: 5000.0, unit: um}
+      phase: {default: 0.0, min: -6.2832, max: 6.2832, unit: rad, aliases: [phase_shift]}
+    properties: {modulation_bandwidth_ghz: 30.0}
+
+  - name: edge_coupler
+    description: Edge coupler for fiber-to-chip light coupling at the chip facet; usable as input or output.
+    functionality: [fiber coupling, io, input, output]
+    aka: [fiber coupler, facet coupler, inverse taper]
+    technology: passive
+    model: fiber_io
+    model_params: {coupling_loss_db: 1.5}
+    footprint: [100, 10]
+    layout: {component: edge_coupler_silicon}
+    ports:
+      - {name: o1, side: any, y: 0.5}
+
+  - name: grating_coupler
+    description: Grating coupler for vertical fiber-to-chip light coupling; usable as input or output.
+    functionality: [fiber coupling, io, input, output]
+    aka: [fiber coupler, vertical coupler]
+    technology: passive
+    model: fiber_io
+    model_params: {coupling_loss_db: 3.0}
+    footprint: [45, 30]
+    layout: {component: grating_coupler_elliptical}
+    ports:
+      - {name: o1, side: any, y: 0.5}
+
+  - name: photodetector
+    description: Waveguide photodetector that converts light into photocurrent; one optical input.
+    functionality: [detector, receiver, photodiode]
+    aka: [pd, photodiode, germanium detector]
+    technology: active
+    ports: "1x0"
+    model: detector
+    footprint: [60, 25]
+    layout: {component: ge_detector_straight_si_contacts}
+    properties: {detection_bandwidth_ghz: 40.0}

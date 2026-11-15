@@ -1,477 +1,95 @@
-# PhIDO-Reimplementation
+# phido (rebuild) - interpreter, designer, layout, verify
 
-**An independent Python reimplementation of an LLM-assisted photonic integrated circuit (PIC) design workflow.**
+Natural-language PIC request -> **Interpreter** -> `PICTemplate` -> **Designer** -> PIC DSL (YAML)
+-> **Layout** (placement, routing, GDSII) and **Verify** (transfer functions). Layout and verify both
+read the designer's DSL, independently of each other.
 
-PhIDO-Reimplementation explores how natural-language PIC requirements can be translated into structured circuit representations and then mapped to photonic components using a modular, typed software architecture.
-
-The project is inspired by the research paper:
-
-> A. Sharma, Y. Fu, V. Ansari, *et al.*, “AI agents for photonic integrated circuit design automation,” *APL Machine Learning*, **3**, 046113 (2025).  
-> https://doi.org/10.1063/5.0300741
-
-**This repository is an independent reimplementation. It is not the original authors’ code and is not affiliated with the original authors.** The original project is available at [JPPhotonics/PhIDORelease](https://github.com/JPPhotonics/PhIDORelease).
-
----
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Architecture](#architecture)
-- [Implemented Features](#implemented-features)
-- [Repository Structure](#repository-structure)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-  - [Run the Designer](#1-run-the-designer)
-  - [Run the Interpreter](#2-run-the-interpreter)
-  - [Run the Full Pipeline](#3-run-the-full-pipeline)
-  - [Run Evaluation](#4-run-evaluation)
-  - [Use the Stages from Python](#5-use-the-stages-from-python)
-- [Design Principles](#design-principles)
-- [Extending the Project](#extending-the-project)
-- [Current Limitations](#current-limitations)
-- [Future Work](#future-work)
-- [Citation](#citation)
-- [License](#license)
-
----
-
-## Project Overview
-
-Designing a photonic integrated circuit involves translating functional requirements into a circuit topology, selecting suitable components, and connecting their optical ports. This project investigates how LLM-assisted agents and conventional programmatic methods can support parts of that workflow.
-
-The implementation is organized as a sequence of independently executable stages:
-
-```text
-Natural-language PIC request
-             |
-             v
-        Interpreter
-             |
-             v
-         PICTemplate
-             |
-             v
-          Designer
-             |
-             v
-        PIC DSL (YAML)
+```
+src/phido/
+  core/        schemas.py (all stage contracts), stage.py, store.py (RunStore), errors.py
+  llm/         adapter.py (validated objects, retry, token/time stats), mock.py, openai_compat.py
+  knowledge/   pdk.py, templates.py, motifs.py, retriever.py (BM25), text.py
+  geometry/    placement.py (layered placement, port alignment, crossing/overlap tests; pure Python)
+  stages/      interpreter.py
+               designer/  selector.py, params.py, circuit.py, proposers.py, crossings.py, stage.py
+               layout/    stage.py, gds.py (gdsfactory, imported lazily)
+               verify/    solver.py (S-matrix circuit solver), models.py (analytic cells), stage.py
+  eval/        metrics.py, runner.py (per-stage eval), compare.py (multi-model table)
+  pipeline.py  build_* helpers, run_pipeline, run_full        cli.py   `phido ...`
+data/          pdk/generic_pdk.yaml, templates/templates.yaml, testbench/*_gold.yaml (basic + hard suites)
+tests/         ~130 tests (layout tests need gdsfactory; SAX cross-check needs sax; both skip if absent)
 ```
 
-The **Interpreter** converts a natural-language description into a structured `PICTemplate`. The **Designer** uses the structured template and available PDK knowledge to select components and construct a circuit representation, producing a PIC DSL representation in YAML.
+## Design in one paragraph
+Typed linear pipeline. Pydantic models are the only thing crossing stage boundaries. LLM calls go
+through one adapter that validates and retries. The interpreter's LLM *only extracts entities*
+(blocks/links or a motif); code builds the graph (motifs expand in code). The designer is
+retrieval-first (BM25 over PDK docstrings), asks an LLM only when the choice is ambiguous, and
+wires ports through validated `Connect` edits (greedy by default, LLM optional with fallback).
 
-The architecture is stage-based: each stage receives a typed input, performs its task, and returns a typed output. This makes individual stages easier to test, inspect, and extend.
-
-> **Scope:** This repository implements the Interpreter and Designer foundations, along with shared infrastructure, knowledge and retrieval utilities, evaluation support, and command-line/pipeline entry points. Physical layout generation and full physical verification are not implemented as complete downstream stages in this release.
-
----
-
-## Architecture
-
-### 1. Interpreter
-
-The Interpreter processes a natural-language PIC request and produces a structured `PICTemplate`.
-
-Its LLM is used primarily for extracting entities from the request, such as:
-- Photonic component or block types.
-- Connections and relationships between blocks.
-- A recognized circuit motif, where applicable.
-
-The circuit graph is constructed programmatically. Motif expansion is also handled in code rather than relying on the LLM to generate the entire graph directly. The Interpreter can retrieve relevant examples from the template library using BM25 retrieval.
-
-### 2. Designer
-
-The Designer transforms a `PICTemplate` into a component-level circuit representation.
-
-Its approach is retrieval-first:
-- It searches the available PDK knowledge, including component descriptions.
-- It uses programmatic selection and parameter-handling utilities.
-- When a component choice is ambiguous, an LLM-assisted proposal can be used.
-- Port connections are represented through validated `Connect` edits.
-- The default wiring approach is greedy; an LLM-based proposer is optional and includes a fallback path.
-
-The Designer can also be run independently from an existing `PICTemplate`, without running the Interpreter first.
-
-### 3. Shared infrastructure
-
-The stages use shared Pydantic contracts and a common stage abstraction. LLM calls are routed through a structured adapter that validates generated outputs and supports retries. A mock backend supports tests that do not require a live model or network access.
-
----
-
-## Implemented Features
-
-### Foundation
-
-- **Typed data contracts:** Pydantic schemas define structured inputs and outputs for processing stages.
-- **Stage abstraction:** A shared interface supports modular, independently executable stages.
-- **Run storage and errors:** Utilities support run artifacts and stage-related error handling.
-- **Structured LLM adapter:** LLM output is validated against the expected data model, with retry support.
-- **LLM backends:** Includes a mock backend and an OpenAI-compatible client adapter.
-
-### Knowledge and retrieval
-
-- **PDK knowledge utilities:** Access to photonic component information.
-- **Template library:** YAML-based circuit templates.
-- **Motif library:** Reusable circuit patterns, with programmatic motif expansion.
-- **BM25 retrieval:** Search over the available template/PDK knowledge.
-- **Retriever protocol:** Defines an interface that can be implemented by alternative retrieval methods.
-- **Text utilities:** Supporting text-processing functionality.
-
-### Designer
-
-- Retrieval-first component selection using PDK descriptions.
-- Parameter-handling utilities.
-- Circuit construction and port-connection logic.
-- Greedy wiring proposal by default.
-- Optional LLM-assisted edit proposal with fallback behavior.
-
-### Evaluation and execution
-
-- Per-stage evaluation support.
-- Metrics including `pass@k` and absolute/conditional outcome rates.
-- Command-line entry points for running individual stages, evaluation, and the chained pipeline.
-- Run artifacts organized by run and stage.
-
----
-
-## Repository Structure
-
-The main source and data organization is:
-
-```text
-src/
-└── phido/
-    ├── core/
-    │   ├── schemas.py       # Typed contracts for stage inputs and outputs
-    │   ├── stage.py         # Shared Stage abstraction
-    │   ├── store.py         # RunStore and run-artifact support
-    │   └── errors.py        # Project-specific errors
-    │
-    ├── llm/
-    │   ├── adapter.py       # Structured generation, validation, and retry
-    │   ├── mock.py          # Mock LLM backend
-    │   └── openai_compat.py # OpenAI-compatible client adapter
-    │
-    ├── knowledge/
-    │   ├── pdk.py           # PDK knowledge utilities
-    │   ├── templates.py     # Template library
-    │   ├── motifs.py        # Circuit motifs and expansion
-    │   ├── retriever.py     # Retriever protocol and BM25 retrieval
-    │   └── text.py          # Text-processing utilities
-    │
-    ├── stages/
-    │   ├── interpreter.py   # Natural-language to PICTemplate
-    │   └── designer/
-    │       ├── selector.py
-    │       ├── params.py
-    │       ├── circuit.py
-    │       ├── proposers.py
-    │       └── stage.py
-    │
-    ├── eval/
-    │   ├── metrics.py       # Evaluation metrics
-    │   └── runner.py        # Per-stage evaluation runner
-    │
-    ├── pipeline.py          # Pipeline construction and execution
-    └── cli.py               # Command-line interface
-
-data/
-├── pdk/
-│   └── generic_pdk.yaml
-├── templates/
-│   └── templates.yaml
-└── testbench/
-    └── *_gold.yaml
-
-examples/
-└── my_template.yaml
-
-tests/
-    # Offline tests; no live LLM required
-
-pyproject.toml
-README.md
-LICENSE
-```
-
----
-
-## Requirements
-
-- Python **3.10 or newer**.
-- The Python packages declared in `pyproject.toml`:
-  - `pydantic>=2`
-  - `pyyaml`
-  - `networkx`
-- `pytest` for running the development test suite.
-- A compatible LLM endpoint for Interpreter runs. The Designer can be run without a live LLM using its default deterministic workflow.
-
----
-
-## Installation
-
-Clone the repository and move into its root directory:
-
+## Install
 ```bash
-git clone <YOUR-REPOSITORY-URL>
-cd PhIDO-Reimplementation
+pip install -e ".[dev]"            # core: interpreter, designer, verify
+pip install -e ".[layout]"         # adds gdsfactory (GDS output); without it layout gives an estimate only
+pip install -e ".[check]"          # optional: sax, used only by a test that cross-checks our solver
 ```
 
-Install the project in editable mode with development dependencies:
-
+## Use each stage on its own
 ```bash
-python -m pip install -e ".[dev]"
-```
+phido --no-store design my_template.yaml         # designer: offline, no LLM
+phido layout runs/<id>/designer/output.yaml      # layout from a stored designer DSL -> layouts/*.gds
+phido verify runs/<id>/designer/output.yaml --csv spectra.csv     # transfer functions (dB per wavelength)
 
-Run the test suite:
+phido templates                                  # library templates
+phido pipeline --adopt edge_mzi_edge --layout --verify   # no LLM needed: adopt a library template
 
-```bash
-python -m pytest
-```
-
-The included tests are intended to run without network access or live LLM calls.
-
----
-
-## Configuration
-
-The Interpreter requires an LLM backend. The project provides an OpenAI-compatible adapter; the README's example configuration uses an Ollama-compatible local endpoint.
-
-Set the model name before running the Interpreter:
-
-```bash
-export PHIDO_LLM_MODEL=qwen2.5:3b
-```
-
-Optional environment variables:
-
-| Variable | Purpose |
-|---|---|
-| `PHIDO_LLM_MODEL` | Model identifier used by the LLM adapter. |
-| `PHIDO_LLM_BASE_URL` | Base URL of the OpenAI-compatible endpoint. |
-| `PHIDO_LLM_API_KEY` | API key, when required by the endpoint. |
-| `PHIDO_TEMPERATURE` | Controls generation temperature. |
-| `PHIDO_NO_THINK` | Enables the `/no_think` suffix behavior for supported reasoning-model workflows. |
-
-The exact endpoint and model availability depend on the LLM provider or local runtime being used.
-
-### Reasoning models and Qwen
-
-For reasoning models that emit `<think>` blocks, the implementation strips those blocks before JSON parsing. To request a faster non-thinking mode where supported, set:
-
-```bash
-export PHIDO_NO_THINK=1
-```
-
-The original project notes recommend using a model variant with at least an 8k context window (for example, `qwen3:8b-8k`). The system prompt and schema are estimated in the project notes to require approximately 2–3k tokens.
-
----
-
-## Usage
-
-The package exposes a `phido` command-line entry point.
-
-### 1. Run the Designer
-
-The Designer can be executed independently and does not require a live LLM in its default deterministic mode.
-
-```bash
-phido design examples/my_template.yaml
-```
-
-The input should be a `PICTemplate` YAML file, such as the example template or a saved Interpreter output.
-
-### 2. Run the Interpreter
-
-The Interpreter accepts a natural-language PIC request and requires a configured LLM endpoint.
-
-```bash
+export PHIDO_LLM_MODEL=qwen3:8b-8k PHIDO_NO_THINK=1       # interpreter needs an LLM
 phido interpret "Two MZIs in series, each modulating up to 10 GHz"
+phido pipeline "A 1x8 splitter tree from 1x2 MMIs with edge couplers at every port" --layout --verify
 ```
 
-### 3. Run the full pipeline
-
-The pipeline chains the stages:
-
+## Evaluate (each stage on its own, paper's outcome codes EE/CS/PC/SG + L/V)
 ```bash
-phido pipeline "Two MZIs in series, each modulating up to 10 GHz"
+phido eval designer | layout | verify            # offline, deterministic, gold templates in
+PHIDO_TEMPERATURE=0.7 phido eval interpreter --suite hard --trials 5   # basic | hard | all
+phido compare --suite all --models qwen3:8b-8k,qwen3:30b --trials 3   # table: pass@k, EE rate, tokens, seconds per trial; FAIL lines on stderr
 ```
+The interpreter eval checks components, links, and any ports/parameters the gold case states.
+`--suite holdout` is a separate set (16 cases) that is **not** in `--suite all`: run it once after you finish tuning, and do
+not change the prompt because of its results, or it stops being held out.
 
-An optional flag enables LLM-assisted Designer behavior:
+## What the new stages do (and do not do)
+- **Layout:** layered placement (long wires get their own track via stand-in nodes), vertical port alignment,
+  staggered wire stubs, gdsfactory `route_single`, GDS. Retries with larger vertical spacing when the first attempt has
+  defects. Checks (structural, not a foundry DRC): instance overlap, routing failure, routes that cross, run on top of
+  each other, or pass through a component they do not connect.
+  Cells without a gdsfactory equivalent (y_branch) become black boxes; pin/pn MZIs reuse the passive MZI geometry.
+  The router needs vertical jogs of 0 or >= ~2 bend radii, hence `gap_y=60`; violations show up as `L` issues.
+- **Verify:** in-repo S-matrix solver (numpy). Its connection logic matches SAX to ~1e-16 on an MZI netlist
+  (tested when sax is installed). Cell models are analytic demo formulas (neff 2.4, ng 4.2, 2 dB/cm), checked against
+  theory in the tests (cross/bar states, FSR = lambda^2/(ng dL), ring energy conservation), not foundry data.
+  Warnings: light leaving through unconnected ports, outputs that receive no light, non-passive circuits.
+- **State-aware wiring:** a chain element (one wire in, one out) is wired along the path that carries the light at its
+  default setting, using the verify models. A 2x2 MZI at zero path difference is in the *cross* state, so it is entered
+  at one input and left at the opposite-side output; with `phase: 3.1416` (bar state) the other pair is chosen. Among
+  near-equal cells, a chain element prefers one that can pass light cleanly (a 2x2 switch over a 50/50 1x2). A tie that
+  text matching cannot break is reported as a designer warning; name a technology or port count to decide it.
 
-```bash
-phido pipeline "Two MZIs in series, each modulating up to 10 GHz" --llm-design
-```
+## Qwen3 / reasoning models
+`<think>` blocks are stripped before JSON parsing. For speed set `PHIDO_NO_THINK=1` (appends `/no_think`).
+Use a model variant with at least 8k context (e.g. `qwen3:8b-8k`): the system prompt plus schema is ~2-3k tokens.
 
-Pipeline artifacts are stored under a run-specific directory, following the structure:
+## Extension points
+- New motif: `@motif(...)` function in `knowledge/motifs.py`.
+- New retriever (vectors): implement `Retriever.search(query, k, focus)`; pass to `PDK(...)` / `TemplateLibrary(...)`.
+- New wiring strategy: implement `EditProposer.propose(graph, pending, feedback)`.
+- Real PDK / templates / PhIDO testbench: same YAML shapes; write a small loader if the repo format differs.
 
-```text
-runs/
-└── <run-id>/
-    ├── interpreter/
-    └── designer/
-```
-
-The Designer can be re-run separately from a stored Interpreter output, allowing the two stages to be inspected and executed independently.
-
-### 4. Run evaluation
-
-Evaluate the Designer:
-
-```bash
-phido eval designer
-```
-
-Evaluate the Interpreter over multiple trials:
-
-```bash
-phido eval interpreter --trials 5
-```
-
-For a meaningful `pass@k` measurement, use a non-zero LLM temperature where appropriate:
-
-```bash
-export PHIDO_TEMPERATURE=0.7
-phido eval interpreter --trials 5
-```
-
-Evaluation results depend on the selected model, model configuration, test cases, and number of trials. They should not be interpreted as a general benchmark of the original PhIDO framework.
-
-### 5. Use the stages from Python
-
-The stages can also be called directly from Python. The following examples assume that the required objects (`llm`, `library`, and `pdk`) have already been configured:
-
-```python
-from phido.core.schemas import (
-    InterpreterInput,
-    DesignerInput,
-)
-from phido.stages.interpreter import InterpreterStage
-from phido.stages.designer.stage import DesignerStage
-
-# Run the Interpreter
-interpreter = InterpreterStage(llm, library)
-interpreter_output = interpreter.run(
-    InterpreterInput(
-        prompt="Two MZIs in series"
-    )
-)
-
-# Run the Designer independently using the Interpreter output
-designer = DesignerStage(pdk)
-designer_output = designer.run(
-    DesignerInput(
-        template=interpreter_output
-    )
-)
-```
-
-The exact object construction depends on the selected LLM backend and the PDK/template data loaded by the application.
-
----
-
-## Design Principles
-
-The implementation follows several architectural principles:
-
-1. **Typed stage boundaries:** Pydantic models are used to define the data exchanged between stages.
-2. **Separation of LLM reasoning and deterministic logic:** The LLM extracts or proposes structured information, while graph construction, motif expansion, and validation are handled programmatically.
-3. **Retrieval-first design:** Existing template and PDK knowledge is used before asking an LLM to resolve ambiguous component choices.
-4. **Independent stages:** The Interpreter and Designer can be executed and evaluated separately.
-5. **Replaceable components:** Retrieval and wiring strategies can be extended without redesigning the complete pipeline.
-6. **Testability:** The mock LLM backend and offline tests support development without live model calls.
-
----
-
-## Extending the Project
-
-The architecture is designed to support further development.
-
-### Add a circuit motif
-
-Define a new motif function using the `@motif(...)` decorator in:
-
-```text
-src/phido/knowledge/motifs.py
-```
-
-Motif expansion is handled programmatically.
-
-### Replace or extend retrieval
-
-Implement the `Retriever.search(query, k, focus)` interface and provide the implementation to the relevant `PDK` or `TemplateLibrary` instance.
-
-This makes it possible to experiment with alternative retrieval approaches, including vector-based retrieval.
-
-### Add a wiring strategy
-
-Implement the `EditProposer.propose(graph, pending, feedback)` interface to introduce another connection-proposal strategy.
-
-### Add real PDK data
-
-The included generic PDK is illustrative. A foundry-specific PDK can be introduced by supplying compatible component and port information and adapting the loader if the source data uses a different format.
-
----
-
-## Current Limitations
-
-This repository is a research-oriented reimplementation and should be understood within the scope of the current implementation.
-
-- **No complete physical layout flow:** GDSII generation and foundry-ready physical implementation are not established by the current release.
-- **No complete physical verification flow:** The repository does not claim full design-rule checking or foundry sign-off.
-- **Graph-level planarity:** The planarity check is graph-level and produces a warning. Port-order heuristics are intended to avoid crossings only for trees and chains.
-- **Interpreter evaluation scope:** The current Interpreter evaluation compares component kinds and connectivity; it does not yet evaluate ports or parameter values.
-- **Illustrative PDK data:** Values in the generic PDK are illustrative and must not be treated as foundry-qualified component data.
-- **LLM-dependent behavior:** Interpreter results can vary with the selected model, endpoint, prompt behavior, and generation settings.
-- **Model validation:** The project notes identify that the implementation has not yet been tested against a real small LLM; prompt and few-shot tuning may be necessary for a particular model.
-- **Not a reproduction of the original benchmark:** The implementation does not claim to reproduce the original paper's complete end-to-end benchmark results.
-
----
-
-## Future Work
-
-Potential directions for extending the project include:
-
-- Adding more circuit motifs and reusable photonic design templates.
-- Integrating additional PDKs and more comprehensive component models.
-- Exploring vector-based retrieval alongside BM25.
-- Improving port assignment and routing strategies for more general circuit topologies.
-- Extending evaluation to include port assignments and component parameters.
-- Adding physical layout generation and verification stages.
-- Evaluating performance across different LLMs and generation configurations.
-
-These are possible extensions, not features claimed to be complete in this release.
-
----
-
-## Citation
-
-If you use this repository in academic work, please cite the original research paper that inspired the project and clearly identify this repository as an independent reimplementation.
-
-```bibtex
-@article{sharma2025aiagents,
-  author  = {Sharma, A. and Fu, Y. and Ansari, V. and others},
-  title   = {AI agents for photonic integrated circuit design automation},
-  journal = {APL Machine Learning},
-  volume  = {3},
-  pages   = {046113},
-  year    = {2025},
-  doi     = {10.1063/5.0300741}
-}
-```
-
----
-
-
-## Authors & Contributors
-
-- **[َAbbas Mohammadi Kian]** — Co-developer
-- **[Co-Author: Reza Hosseiny]** — Co-developer
-
-
-## License
-
-MIT — see [LICENSE](LICENSE).
-
-
+## Known limits
+- Designer crossing repair is a port-swap heuristic on a placement estimate (footprints), not a re-generation loop.
+- Layout checks are structural; there is no real DRC deck.
+- Meshes (`mesh` pattern, Clements/Reck): designer and verify work for all sizes; layout is clean for Clements meshes
+  of 2-8 modes. Reck meshes of 4+ modes still get one flagged route overlap each (the checker reports it, nothing is hidden).
+- Not yet run against the real PhIDO testbench/PDK/templates (format of the `PhIDO-Release` repo not seen).
+- PDK `properties`, models and footprints are illustrative.
+- Not yet done: PDK-size scaling study, mixed-model-per-stage experiment, vector retriever.

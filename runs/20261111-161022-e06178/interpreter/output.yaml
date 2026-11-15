@@ -1,0 +1,65 @@
+prompt: Light enters through an edge coupler, passes four MZIs in series, and is detected
+  by a photodetector
+extraction:
+  blocks: []
+  links: []
+  motif:
+    name: cascade
+    args:
+      unit: mzi
+      n: 4
+      in_kind: edge_coupler
+      out_kind: photodetector
+template:
+  title: cascade of 4 mzi
+  nodes:
+  - id: IN1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: N1
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: N2
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: N3
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: N4
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT1
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  edges:
+  - src: IN1
+    dst: N1
+  - src: N1
+    dst: N2
+  - src: N2
+    dst: N3
+  - src: N3
+    dst: N4
+  - src: N4
+    dst: OUT1
+  source: motif
+matches:
+- name: receiver_chain
+  score: 6.72
+- name: edge_mzi_edge
+  score: 5.418
+- name: mzi_cascade_4
+  score: 4.031
+warnings: []

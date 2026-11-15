@@ -1,0 +1,46 @@
+prompt: Two MZIs in series, each modulating up to 10 GHz
+extraction:
+  blocks:
+  - name: mzi1
+    kind: mzi
+    ports: null
+    description: ''
+    params:
+      modulation_bandwidth_ghz: 10
+  - name: mzi2
+    kind: mzi
+    ports: null
+    description: ''
+    params:
+      modulation_bandwidth_ghz: 10
+  links:
+  - src: mzi1
+    dst: mzi2
+  motif: null
+template:
+  title: Two MZIs in series, each modulating up to 10 GHz
+  nodes:
+  - id: mzi1
+    kind: mzi
+    ports: null
+    description: ''
+    params:
+      modulation_bandwidth_ghz: 10
+  - id: mzi2
+    kind: mzi
+    ports: null
+    description: ''
+    params:
+      modulation_bandwidth_ghz: 10
+  edges:
+  - src: mzi1
+    dst: mzi2
+  source: blocks
+matches:
+- name: mzi_cascade_2
+  score: 4.773
+- name: mzi_cascade_4
+  score: 2.383
+- name: single_mzi
+  score: 1.174
+warnings: []

@@ -1,0 +1,24 @@
+template:
+  title: An edge coupler feeds an add-drop ring resonator with 2 inputs and 2 outputs;...
+  nodes:
+  - id: ec1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: ring1
+    kind: ring
+    ports: 2x2
+    description: add-drop ring resonator
+    params: {}
+  - id: pd1
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  edges:
+  - src: ec1
+    dst: ring1
+  - src: ring1
+    dst: pd1
+  source: blocks

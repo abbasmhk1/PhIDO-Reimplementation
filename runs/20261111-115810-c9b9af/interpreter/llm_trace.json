@@ -1,0 +1,16 @@
+[
+  {
+    "attempt": 0,
+    "raw": "{\"motif\": {\"name\": \"mesh\", \"args\": {\"modes\": 4, \"topology\": \"clements\", \"unit\": \"mzi\", \"ports\": \"2x2\", \"io_kind\": \"edge_coupler\"}}}",
+    "seconds": 14.585,
+    "usage": {
+      "prompt_tokens": 1945,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens": 146,
+      "total_tokens": 2091
+    },
+    "ok": true
+  }
+]

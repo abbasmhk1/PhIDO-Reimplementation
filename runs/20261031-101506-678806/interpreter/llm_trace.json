@@ -1,0 +1,7 @@
+[
+  {
+    "attempt": 0,
+    "raw": "{\n  \"motif\": {\n    \"name\": \"tree\",\n    \"args\": {\n      \"unit\": \"mmi\",\n      \"stages\": 3,\n      \"fan,ot\": 2,\n      \"ports\": \"1x2\",\n      \"io_kind\": \"edge_coupler\"\n    }\n  }\n}",
+    "ok": true
+  }
+]

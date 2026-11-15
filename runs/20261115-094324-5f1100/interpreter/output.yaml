@@ -1,0 +1,57 @@
+prompt: An edge coupler feeds an add-drop ring resonator with 2 inputs and 2 outputs;
+  the through port goes to a photodetector.
+extraction:
+  blocks:
+  - name: ec1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - name: ring1
+    kind: ring
+    ports: 2x2
+    description: add-drop ring resonator
+    params: {}
+  - name: pd1
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  links:
+  - src: ec1
+    dst: ring1
+  - src: ring1
+    dst: pd1
+  motif: null
+template:
+  title: An edge coupler feeds an add-drop ring resonator with 2 inputs and 2 outputs;...
+  nodes:
+  - id: ec1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: ring1
+    kind: ring
+    ports: 2x2
+    description: add-drop ring resonator
+    params: {}
+  - id: pd1
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  edges:
+  - src: ec1
+    dst: ring1
+  - src: ring1
+    dst: pd1
+  source: blocks
+matches:
+- name: ring_add_drop
+  score: 10.52
+- name: receiver_chain
+  score: 8.278
+- name: edge_mzi_edge
+  score: 7.308
+warnings: []

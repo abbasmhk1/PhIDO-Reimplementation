@@ -1,0 +1,26 @@
+template:
+  title: An edge coupler feeds a 2x2 MZI with a path length difference of 100 um,
+    and...
+  nodes:
+  - id: ec1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: mzi1
+    kind: mzi
+    ports: 2x2
+    description: ''
+    params:
+      delta_length_um: 100
+  - id: pd1
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  edges:
+  - src: ec1
+    dst: mzi1
+  - src: mzi1
+    dst: pd1
+  source: blocks

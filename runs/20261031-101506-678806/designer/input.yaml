@@ -1,0 +1,115 @@
+template:
+  title: 2-ary tree of mmi, 3 stages
+  nodes:
+  - id: N1
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N2
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N3
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N4
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N5
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N6
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N7
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: IN1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT2
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT3
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT4
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT5
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT6
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT7
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT8
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  edges:
+  - src: N1
+    dst: N2
+  - src: N1
+    dst: N3
+  - src: N2
+    dst: N4
+  - src: N2
+    dst: N5
+  - src: N3
+    dst: N6
+  - src: N3
+    dst: N7
+  - src: IN1
+    dst: N1
+  - src: N4
+    dst: OUT1
+  - src: N4
+    dst: OUT2
+  - src: N5
+    dst: OUT3
+  - src: N5
+    dst: OUT4
+  - src: N6
+    dst: OUT5
+  - src: N6
+    dst: OUT6
+  - src: N7
+    dst: OUT7
+  - src: N7
+    dst: OUT8
+  source: motif

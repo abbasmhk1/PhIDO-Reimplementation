@@ -1,0 +1,84 @@
+prompt: Four MZIs in series, each with a heater, then a photodetector
+extraction:
+  blocks:
+  - name: mzi1
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - name: mzi2
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - name: mzi3
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - name: mzi4
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - name: pd1
+    kind: photodetector
+    ports: 1x1
+    description: ''
+    params: {}
+  links:
+  - src: mzi1
+    dst: mzi2
+  - src: mzi2
+    dst: mzi3
+  - src: mzi3
+    dst: mzi4
+  - src: mzi4
+    dst: pd1
+  motif: null
+template:
+  title: Four MZIs in series, each with a heater, then a photodetecto
+  nodes:
+  - id: mzi1
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - id: mzi2
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - id: mzi3
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - id: mzi4
+    kind: mzi
+    ports: 1x2
+    description: heater
+    params: {}
+  - id: pd1
+    kind: photodetector
+    ports: 1x1
+    description: ''
+    params: {}
+  edges:
+  - src: mzi1
+    dst: mzi2
+  - src: mzi2
+    dst: mzi3
+  - src: mzi3
+    dst: mzi4
+  - src: mzi4
+    dst: pd1
+  source: blocks
+matches:
+- name: mzi_cascade_4
+  score: 4.031
+- name: receiver_chain
+  score: 2.942
+- name: mmi_then_mmi
+  score: 2.721
+warnings: []

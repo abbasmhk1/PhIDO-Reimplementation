@@ -1,0 +1,39 @@
+placements:
+- node: ec1
+  component: edge_coupler
+  x: 50.0
+  y: 0.0
+  width: 100.0
+  height: 0.5
+  rotation: 180
+  backend: gdsfactory
+- node: mzi1
+  component: mzi_2x2_heater
+  x: 305.5
+  y: -0.5
+  width: 291.0
+  height: 56.0
+  rotation: 0
+  backend: gdsfactory
+- node: pd1
+  component: photodetector
+  x: 541.0
+  y: -1.25
+  width: 60.0
+  height: 25.0
+  rotation: 0
+  backend: gdsfactory
+routes:
+- edge: E1
+  link: ec1,o1:mzi1,o2
+  ok: true
+  length_um: 60.0
+  message: ''
+- edge: E2
+  link: mzi1,o4:pd1,o1
+  ok: true
+  length_um: 60.0
+  message: ''
+gds_path: runs/20261115-094202-b39cb3/layout/An_edge_coupler_feeds_a_2x2_MZI_whose_ou.gds
+issues: []
+warnings: []

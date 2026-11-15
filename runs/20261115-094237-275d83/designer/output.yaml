@@ -1,0 +1,112 @@
+title: 2-ary tree of mmi, 2 stages
+nodes:
+  N1:
+    component: mmi_1x2
+    params: {}
+  N2:
+    component: mmi_1x2
+    params: {}
+  N3:
+    component: mmi_1x2
+    params: {}
+  IN1:
+    component: edge_coupler
+    params: {}
+  OUT1:
+    component: photodetector
+    params: {}
+  OUT2:
+    component: photodetector
+    params: {}
+  OUT3:
+    component: photodetector
+    params: {}
+  OUT4:
+    component: photodetector
+    params: {}
+edges:
+  E1:
+    link: N1,o2:N2,o1
+  E2:
+    link: N1,o3:N3,o1
+  E3:
+    link: IN1,o1:N1,o1
+  E4:
+    link: N2,o2:OUT1,o1
+  E5:
+    link: N2,o3:OUT2,o1
+  E6:
+    link: N3,o2:OUT3,o1
+  E7:
+    link: N3,o3:OUT4,o1
+choices:
+- node: N1
+  cell: mmi_1x2
+  match: exact
+  score: 6.074
+  alternatives:
+  - mmi_2x2
+  - mzi_1x2_heater
+  - mzi_1x2_pindiode
+  ambiguous: false
+  chosen_by: retrieval
+- node: N2
+  cell: mmi_1x2
+  match: exact
+  score: 6.074
+  alternatives:
+  - mmi_2x2
+  - mzi_1x2_heater
+  - mzi_1x2_pindiode
+  ambiguous: false
+  chosen_by: retrieval
+- node: N3
+  cell: mmi_1x2
+  match: exact
+  score: 6.074
+  alternatives:
+  - mmi_2x2
+  - mzi_1x2_heater
+  - mzi_1x2_pindiode
+  ambiguous: false
+  chosen_by: retrieval
+- node: IN1
+  cell: edge_coupler
+  match: exact
+  score: 6.093
+  alternatives:
+  - directional_coupler
+  - grating_coupler
+  - mmi_2x2
+  ambiguous: false
+  chosen_by: retrieval
+- node: OUT1
+  cell: photodetector
+  match: exact
+  score: 5.102
+  alternatives: []
+  ambiguous: false
+  chosen_by: retrieval
+- node: OUT2
+  cell: photodetector
+  match: exact
+  score: 5.102
+  alternatives: []
+  ambiguous: false
+  chosen_by: retrieval
+- node: OUT3
+  cell: photodetector
+  match: exact
+  score: 5.102
+  alternatives: []
+  ambiguous: false
+  chosen_by: retrieval
+- node: OUT4
+  cell: photodetector
+  match: exact
+  score: 5.102
+  alternatives: []
+  ambiguous: false
+  chosen_by: retrieval
+issues: []
+warnings: []

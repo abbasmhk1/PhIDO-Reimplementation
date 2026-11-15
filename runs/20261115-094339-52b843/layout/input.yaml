@@ -1,0 +1,224 @@
+design:
+  title: 4-mode clements mesh of mzi
+  nodes:
+    N1:
+      component: mzi_2x2_heater
+      params: {}
+    N2:
+      component: mzi_2x2_heater
+      params: {}
+    N3:
+      component: mzi_2x2_heater
+      params: {}
+    N4:
+      component: mzi_2x2_heater
+      params: {}
+    N5:
+      component: mzi_2x2_heater
+      params: {}
+    N6:
+      component: mzi_2x2_heater
+      params: {}
+    IN1:
+      component: edge_coupler
+      params: {}
+    IN2:
+      component: edge_coupler
+      params: {}
+    IN3:
+      component: edge_coupler
+      params: {}
+    IN4:
+      component: edge_coupler
+      params: {}
+    OUT1:
+      component: edge_coupler
+      params: {}
+    OUT2:
+      component: edge_coupler
+      params: {}
+    OUT3:
+      component: edge_coupler
+      params: {}
+    OUT4:
+      component: edge_coupler
+      params: {}
+  edges:
+    E1:
+      link: N1,o4:N3,o2
+    E2:
+      link: N2,o3:N3,o1
+    E3:
+      link: N1,o3:N4,o2
+    E4:
+      link: N3,o3:N4,o1
+    E5:
+      link: N3,o4:N5,o2
+    E6:
+      link: N2,o4:N5,o1
+    E7:
+      link: N4,o4:N6,o2
+    E8:
+      link: N5,o3:N6,o1
+    E9:
+      link: IN1,o1:N1,o2
+    E10:
+      link: IN2,o1:N1,o1
+    E11:
+      link: IN3,o1:N2,o2
+    E12:
+      link: IN4,o1:N2,o1
+    E13:
+      link: N4,o3:OUT1,o1
+    E14:
+      link: N6,o3:OUT2,o1
+    E15:
+      link: N6,o4:OUT3,o1
+    E16:
+      link: N5,o4:OUT4,o1
+  choices:
+  - node: N1
+    cell: mzi_2x2_heater
+    match: exact
+    score: 4.146
+    alternatives:
+    - mzi_2x2_pindiode
+    - mzi_2x2_pndiode
+    - mzi_1x2_pindiode
+    ambiguous: true
+    chosen_by: retrieval
+  - node: N2
+    cell: mzi_2x2_heater
+    match: exact
+    score: 4.146
+    alternatives:
+    - mzi_2x2_pindiode
+    - mzi_2x2_pndiode
+    - mzi_1x2_pindiode
+    ambiguous: true
+    chosen_by: retrieval
+  - node: N3
+    cell: mzi_2x2_heater
+    match: exact
+    score: 4.146
+    alternatives:
+    - mzi_2x2_pindiode
+    - mzi_2x2_pndiode
+    - mzi_1x2_pindiode
+    ambiguous: true
+    chosen_by: retrieval
+  - node: N4
+    cell: mzi_2x2_heater
+    match: exact
+    score: 4.146
+    alternatives:
+    - mzi_2x2_pindiode
+    - mzi_2x2_pndiode
+    - mzi_1x2_pindiode
+    ambiguous: true
+    chosen_by: retrieval
+  - node: N5
+    cell: mzi_2x2_heater
+    match: exact
+    score: 4.146
+    alternatives:
+    - mzi_2x2_pindiode
+    - mzi_2x2_pndiode
+    - mzi_1x2_pindiode
+    ambiguous: true
+    chosen_by: retrieval
+  - node: N6
+    cell: mzi_2x2_heater
+    match: exact
+    score: 4.146
+    alternatives:
+    - mzi_2x2_pindiode
+    - mzi_2x2_pndiode
+    - mzi_1x2_pindiode
+    ambiguous: true
+    chosen_by: retrieval
+  - node: IN1
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  - node: IN2
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  - node: IN3
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  - node: IN4
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  - node: OUT1
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  - node: OUT2
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  - node: OUT3
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  - node: OUT4
+    cell: edge_coupler
+    match: exact
+    score: 6.093
+    alternatives:
+    - directional_coupler
+    - grating_coupler
+    - mmi_2x2
+    ambiguous: false
+    chosen_by: retrieval
+  issues: []
+  warnings:
+  - 'N1: ''mzi'' matched several cells about equally; picked mzi_2x2_heater (others:
+    mzi_2x2_pindiode, mzi_2x2_pndiode, mzi_1x2_pindiode). Name a technology or port
+    count to choose.'

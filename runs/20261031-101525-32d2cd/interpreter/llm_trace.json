@@ -1,0 +1,7 @@
+[
+  {
+    "attempt": 0,
+    "raw": "{\n  \"blocks\": [\n    {\"name\": \"mzi1\", \"kind\": \"mzi\", \"ports\": \"1x2\", \"description\": \"heater\"},\n    {\"name\": \"mzi2\", \"kind\": \"mzi\", \"ports\": \"1x2\", \"description\": \"heater\"},\n    {\"name\": \"mzi3\", \"kind\": \"mzi\", \"ports\": \"1x2\", \"description\": \"heater\"},\n    {\"name\": \"mzi4\", \"kind\": \"mzi\", \"ports\": \"1x2\", \"description\": \"heater\"},\n    {\"name\": \"pd1\", \"kind\": \"photodetector\", \"ports\": \"1x1\"}\n  ],\n  \"links\": [\n    {\"src\": \"mzi1\", \"dst\": \"mzi2\"},\n    {\"src\": \"mzi2\", \"dst\": \"mzi3\"},\n    {\"src\": \"mzi3\", \"dst\": \"mzi4\"},\n    {\"src\": \"mzi4\", \"dst\": \"pd1\"}\n  ]\n}",
+    "ok": true
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "attempt": 0,
+    "raw": "{\"blocks\": [{\"name\": \"mzi1\", \"kind\": \"mzi\", \"ports\": \"2x2\", \"params\": {\"modulation_bandwidth_ghz\": 10}}, {\"name\": \"mzi2\", \"kind\": \"mzi\", \"ports\": \"2x2\", \"params\": {\"modulation_bandwidth_ghz\": 10}}], \"links\": [{\"src\": \"mzi1\", \"dst\": \"mzi2\"}]}",
+    "ok": true
+  }
+]

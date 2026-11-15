@@ -1,0 +1,45 @@
+template:
+  title: cascade of 4 mzi
+  nodes:
+  - id: IN1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: N1
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: N2
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: N3
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: N4
+    kind: mzi
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT1
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  edges:
+  - src: IN1
+    dst: N1
+  - src: N1
+    dst: N2
+  - src: N2
+    dst: N3
+  - src: N3
+    dst: N4
+  - src: N4
+    dst: OUT1
+  source: motif

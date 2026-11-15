@@ -1,0 +1,104 @@
+# HELD-OUT interpreter cases. Written after the prompt was last tuned and deliberately NOT part of
+# `--suite all`. Run once with:  phido compare --suite holdout --models <model> --trials 2
+# Do not edit the prompt because of these results and then re-run them: that would end their value.
+- id: HO-two-rings-combined
+  level: 3
+  prompt: A 1x2 MMI sends light into two microring resonators, and a 2x2 MMI combines their outputs.
+  nodes:
+    - {id: s, kind: mmi, ports: "1x2"}
+    - {id: r1, kind: ring}
+    - {id: r2, kind: ring}
+    - {id: c, kind: mmi, ports: "2x2"}
+  edges: [{src: s, dst: r1}, {src: s, dst: r2}, {src: r1, dst: c}, {src: r2, dst: c}]
+- id: HO-two-receiver-channels
+  level: 2
+  prompt: Two independent receiver channels, each one a grating coupler feeding a photodetector.
+  nodes:
+    - {id: g1, kind: grating_coupler}
+    - {id: p1, kind: photodetector}
+    - {id: g2, kind: grating_coupler}
+    - {id: p2, kind: photodetector}
+  edges: [{src: g1, dst: p1}, {src: g2, dst: p2}]
+- id: HO-two-level-splitter
+  level: 3
+  prompt: A 1x4 power splitter built from a 1x2 MMI whose two outputs each go into another 1x2 MMI.
+  nodes:
+    - {id: a, kind: mmi, ports: "1x2"}
+    - {id: b, kind: mmi, ports: "1x2"}
+    - {id: c, kind: mmi, ports: "1x2"}
+  edges: [{src: a, dst: b}, {src: a, dst: c}]
+- id: HO-five-mzi-output-coupler
+  level: 4
+  prompt: Five MZIs in a row, with an edge coupler at the output end only.
+  motif: {name: cascade, args: {unit: mzi, n: 5, out_kind: edge_coupler}}
+- id: HO-clements-6-bare
+  level: 4
+  prompt: A 6-mode rectangular Clements mesh of MZIs, no couplers.
+  motif: {name: mesh, args: {modes: 6, topology: clements}}
+- id: HO-three-rings-radii
+  level: 3
+  prompt: Three ring resonators in series with radii of 5, 7 and 9 um.
+  nodes:
+    - {id: a, kind: ring, params: {radius_um: 5}}
+    - {id: b, kind: ring, params: {radius_um: 7}}
+    - {id: c, kind: ring, params: {radius_um: 9}}
+  edges: [{src: a, dst: b}, {src: b, dst: c}]
+- id: HO-directional-coupler-length
+  level: 1
+  prompt: A single directional coupler with a 30 um coupling length.
+  nodes: [{id: a, kind: directional_coupler, params: {length_um: 30}}]
+- id: HO-fibre-to-fibre-wire
+  level: 3
+  prompt: An edge coupler, then a 50 um straight waveguide, then a grating coupler.
+  nodes:
+    - {id: e, kind: edge_coupler}
+    - {id: w, kind: waveguide, params: {length_um: 50}}
+    - {id: g, kind: grating_coupler}
+  edges: [{src: e, dst: w}, {src: w, dst: g}]
+- id: HO-modulator-then-detector
+  level: 2
+  prompt: A pin-diode MZI modulator followed by a photodetector.
+  nodes: [{id: m, kind: mzi}, {id: p, kind: photodetector}]
+  edges: [{src: m, dst: p}]
+- id: HO-tree-16-detectors
+  level: 4
+  prompt: A 1x16 MMI splitter tree with a photodetector at every output.
+  motif: {name: tree, args: {unit: mmi, stages: 4, out_kind: photodetector}}
+- id: HO-mzi-vs-ring-branches
+  level: 4
+  prompt: >-
+    Two parallel branches after a 1x2 MMI: the first branch is an MZI, the second is a ring resonator, and
+    each branch ends in its own photodetector.
+  nodes:
+    - {id: s, kind: mmi, ports: "1x2"}
+    - {id: m, kind: mzi}
+    - {id: r, kind: ring}
+    - {id: p1, kind: photodetector}
+    - {id: p2, kind: photodetector}
+  edges: [{src: s, dst: m}, {src: s, dst: r}, {src: m, dst: p1}, {src: r, dst: p2}]
+- id: HO-six-mmi-cascade
+  level: 3
+  prompt: A cascade of six 2x2 MMIs.
+  motif: {name: cascade, args: {unit: mmi, n: 6, ports: "2x2"}}
+- id: HO-ring-radius-gap-detector
+  level: 2
+  prompt: A ring resonator with a 15 um radius and a 0.3 um gap that feeds a photodetector.
+  nodes:
+    - {id: r, kind: ring, params: {radius_um: 15, gap_um: 0.3}}
+    - {id: p, kind: photodetector}
+  edges: [{src: r, dst: p}]
+- id: HO-reck-8-io
+  level: 4
+  prompt: An 8-mode triangular Reck mesh with an edge coupler at every input and every output.
+  motif: {name: mesh, args: {modes: 8, topology: reck, io_kind: edge_coupler}}
+- id: HO-lone-detector
+  level: 1
+  prompt: Just a photodetector.
+  nodes: [{id: p, kind: photodetector}]
+- id: HO-heater-then-mmi
+  level: 2
+  prompt: A 200 um heater phase shifter followed by a 2x2 MMI.
+  nodes:
+    - {id: h, kind: heater, params: {length_um: 200}}
+    - {id: m, kind: mmi, ports: "2x2"}
+  edges: [{src: h, dst: m}]

@@ -1,0 +1,16 @@
+[
+  {
+    "attempt": 0,
+    "raw": "{\"blocks\": [{\"name\": \"ec1\", \"kind\": \"edge_coupler\"}, {\"name\": \"mzi1\", \"kind\": \"mzi\", \"ports\": \"2x2\", \"params\": {\"delta_length_um\": 100}}, {\"name\": \"pd1\", \"kind\": \"photodetector\"}], \"links\": [{\"src\": \"ec1\", \"dst\": \"mzi1\"}, {\"src\": \"mzi1\", \"dst\": \"pd1\"}]}",
+    "seconds": 4.294,
+    "usage": {
+      "prompt_tokens": 1961,
+      "prompt_tokens_details": {
+        "cached_tokens": 934
+      },
+      "completion_tokens": 267,
+      "total_tokens": 2228
+    },
+    "ok": true
+  }
+]

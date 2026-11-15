@@ -1,0 +1,149 @@
+# Harder interpreter cases: wording variants, hierarchy, parts-vs-components, parameters carried per node,
+# input-only / output-only components, reversed word order, larger patterns (gold given as a motif).
+- id: H-in-only-grating
+  level: 3
+  prompt: A chain of three MZIs with a grating coupler only at the input.
+  nodes:
+    - {id: g, kind: grating_coupler}
+    - {id: a, kind: mzi}
+    - {id: b, kind: mzi}
+    - {id: c, kind: mzi}
+  edges: [{src: g, dst: a}, {src: a, dst: b}, {src: b, dst: c}]
+- id: H-edge-four-mzi-pd
+  level: 3
+  prompt: Light enters through an edge coupler, passes four MZIs in series, and is detected by a photodetector.
+  nodes:
+    - {id: e, kind: edge_coupler}
+    - {id: a, kind: mzi}
+    - {id: b, kind: mzi}
+    - {id: c, kind: mzi}
+    - {id: d, kind: mzi}
+    - {id: p, kind: photodetector}
+  edges: [{src: e, dst: a}, {src: a, dst: b}, {src: b, dst: c}, {src: c, dst: d}, {src: d, dst: p}]
+- id: H-demux-hierarchy
+  level: 4
+  prompt: >-
+    A 1x4 wavelength demultiplexer made of three 2-channel blocks. A root block's two outputs each feed
+    another block. Every block is two MZIs in series.
+  nodes:
+    - {id: a1, kind: mzi}
+    - {id: a2, kind: mzi}
+    - {id: b1, kind: mzi}
+    - {id: b2, kind: mzi}
+    - {id: c1, kind: mzi}
+    - {id: c2, kind: mzi}
+  edges:
+    - {src: a1, dst: a2}
+    - {src: a2, dst: b1}
+    - {src: a2, dst: c1}
+    - {src: b1, dst: b2}
+    - {src: c1, dst: c2}
+- id: H-params-per-node
+  level: 3
+  prompt: Four MZIs in series with path length differences of 30, 50, 30 and 50 um.
+  nodes:
+    - {id: a, kind: mzi, params: {delta_length_um: 30}}
+    - {id: b, kind: mzi, params: {delta_length_um: 50}}
+    - {id: c, kind: mzi, params: {delta_length_um: 30}}
+    - {id: d, kind: mzi, params: {delta_length_um: 50}}
+  edges: [{src: a, dst: b}, {src: b, dst: c}, {src: c, dst: d}]
+- id: H-two-rings-radii
+  level: 2
+  prompt: Two ring resonators in series, the first with radius 10 um and the second with radius 12 um.
+  nodes:
+    - {id: a, kind: ring, params: {radius_um: 10}}
+    - {id: b, kind: ring, params: {radius_um: 12}}
+  edges: [{src: a, dst: b}]
+- id: H-mzi-from-parts
+  level: 3
+  prompt: >-
+    A 1x2 MMI splits the light into two arms. Each arm has its own heater phase shifter. The two arms are
+    recombined by a 2x2 MMI.
+  nodes:
+    - {id: s, kind: mmi, ports: "1x2"}
+    - {id: h1, kind: heater}
+    - {id: h2, kind: heater}
+    - {id: c, kind: mmi, ports: "2x2"}
+  edges: [{src: s, dst: h1}, {src: s, dst: h2}, {src: h1, dst: c}, {src: h2, dst: c}]
+- id: H-ring-vs-waveguide
+  level: 3
+  prompt: >-
+    Two parallel paths: path A is a ring resonator, path B is a straight waveguide of 100 um. A 1x2 MMI
+    splits the input and a 2x2 MMI recombines the two paths.
+  nodes:
+    - {id: s, kind: mmi, ports: "1x2"}
+    - {id: r, kind: ring}
+    - {id: w, kind: waveguide, params: {length_um: 100}}
+    - {id: c, kind: mmi, ports: "2x2"}
+  edges: [{src: s, dst: r}, {src: s, dst: w}, {src: r, dst: c}, {src: w, dst: c}]
+- id: H-tree-pd-outputs
+  level: 3
+  prompt: A 1x4 power splitter tree made of 1x2 MMIs with a photodetector on every output.
+  motif: {name: tree, args: {unit: mmi, stages: 2, out_kind: photodetector}}
+- id: H-chain-16
+  level: 4
+  prompt: Sixteen MZIs in a chain, with an edge coupler at the input and a photodetector at the output.
+  motif: {name: cascade, args: {unit: mzi, n: 16, in_kind: edge_coupler, out_kind: photodetector}}
+- id: H-switch-tree-gratings
+  level: 4
+  prompt: A 1x8 switch tree of 1x2 MZIs with a grating coupler at every output but no input coupler.
+  motif: {name: tree, args: {unit: mzi, stages: 3, ports: "1x2", out_kind: grating_coupler}}
+- id: H-modulator-30ghz
+  level: 1
+  prompt: We need a modulator, just a single 2x2 MZI running at 30 GHz.
+  nodes: [{id: a, kind: mzi, ports: "2x2", params: {modulation_bandwidth_ghz: 30}}]
+- id: H-add-drop-pd
+  level: 2
+  prompt: An add-drop ring with 2 inputs and 2 outputs, whose through port feeds a photodetector.
+  nodes: [{id: a, kind: ring, ports: "2x2"}, {id: p, kind: photodetector}]
+  edges: [{src: a, dst: p}]
+- id: H-split-detect-or-couple
+  level: 3
+  prompt: >-
+    An edge coupler feeds a 1x2 MMI. One output of the MMI goes to a photodetector and the other output
+    goes to a grating coupler.
+  nodes:
+    - {id: e, kind: edge_coupler}
+    - {id: m, kind: mmi, ports: "1x2"}
+    - {id: p, kind: photodetector}
+    - {id: g, kind: grating_coupler}
+  edges: [{src: e, dst: m}, {src: m, dst: p}, {src: m, dst: g}]
+- id: H-three-mmi-chain
+  level: 2
+  prompt: Three 2x2 MMIs in series.
+  nodes:
+    - {id: a, kind: mmi, ports: "2x2"}
+    - {id: b, kind: mmi, ports: "2x2"}
+    - {id: c, kind: mmi, ports: "2x2"}
+  edges: [{src: a, dst: b}, {src: b, dst: c}]
+- id: H-reversed-order
+  level: 2
+  prompt: A photodetector that is fed by a ring resonator, which is fed by an edge coupler.
+  nodes: [{id: p, kind: photodetector}, {id: r, kind: ring}, {id: e, kind: edge_coupler}]
+  edges: [{src: e, dst: r}, {src: r, dst: p}]
+- id: H-two-channel-receiver
+  level: 4
+  prompt: >-
+    An edge coupler feeds a 1x2 MMI. Each MMI output feeds its own ring resonator, one with radius 8 um and
+    the other with radius 10 um, and each ring feeds its own photodetector.
+  nodes:
+    - {id: e, kind: edge_coupler}
+    - {id: m, kind: mmi, ports: "1x2"}
+    - {id: r1, kind: ring, params: {radius_um: 8}}
+    - {id: r2, kind: ring, params: {radius_um: 10}}
+    - {id: p1, kind: photodetector}
+    - {id: p2, kind: photodetector}
+  edges:
+    - {src: e, dst: m}
+    - {src: m, dst: r1}
+    - {src: m, dst: r2}
+    - {src: r1, dst: p1}
+    - {src: r2, dst: p2}
+- id: H-clements-4
+  level: 4
+  prompt: A 4-mode Clements mesh of MZIs.
+  motif: {name: mesh, args: {modes: 4, topology: clements}}
+- id: H-reck-6-io
+  level: 4
+  prompt: A 6-mode Reck triangular mesh of MZIs with an edge coupler at every input and every output.
+  motif: {name: mesh, args: {modes: 6, topology: reck, io_kind: edge_coupler}}

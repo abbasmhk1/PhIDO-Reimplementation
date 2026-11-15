@@ -1,0 +1,76 @@
+title: Four MZIs in series, each with a heater, then a photodetecto
+nodes:
+  mzi1:
+    component: mzi_2x2_heater
+    params: {}
+  mzi2:
+    component: mzi_2x2_heater
+    params: {}
+  mzi3:
+    component: mzi_2x2_heater
+    params: {}
+  mzi4:
+    component: mzi_2x2_heater
+    params: {}
+  photodetector1:
+    component: photodetector
+    params: {}
+edges:
+  E1:
+    link: mzi1,o3:mzi2,o2
+  E2:
+    link: mzi2,o3:mzi3,o2
+  E3:
+    link: mzi3,o3:mzi4,o2
+  E4:
+    link: mzi4,o3:photodetector1,o1
+choices:
+- node: mzi1
+  cell: mzi_2x2_heater
+  match: exact
+  score: 6.919
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_2x2_pndiode
+  - mzi_1x2_heater
+  ambiguous: false
+  chosen_by: retrieval
+- node: mzi2
+  cell: mzi_2x2_heater
+  match: exact
+  score: 6.919
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_2x2_pndiode
+  - mzi_1x2_heater
+  ambiguous: false
+  chosen_by: retrieval
+- node: mzi3
+  cell: mzi_2x2_heater
+  match: exact
+  score: 6.919
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_2x2_pndiode
+  - mzi_1x2_heater
+  ambiguous: false
+  chosen_by: retrieval
+- node: mzi4
+  cell: mzi_2x2_heater
+  match: exact
+  score: 6.919
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_2x2_pndiode
+  - mzi_1x2_heater
+  ambiguous: false
+  chosen_by: retrieval
+- node: photodetector1
+  cell: photodetector
+  match: exact
+  score: 5.102
+  alternatives: []
+  ambiguous: false
+  chosen_by: retrieval
+issues: []
+warnings: []

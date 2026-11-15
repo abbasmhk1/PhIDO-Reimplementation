@@ -1,0 +1,81 @@
+prompt: A 1x4 power splitter made of 1x2 MMIs, with an edge coupler at the input and
+  a photodetector at every output.
+extraction:
+  blocks: []
+  links: []
+  motif:
+    name: tree
+    args:
+      unit: mmi
+      stages: 2
+      fanout: 2
+      ports: 1x2
+      in_kind: edge_coupler
+      out_kind: photodetector
+template:
+  title: 2-ary tree of mmi, 2 stages
+  nodes:
+  - id: N1
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N2
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: N3
+    kind: mmi
+    ports: 1x2
+    description: ''
+    params: {}
+  - id: IN1
+    kind: edge_coupler
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT1
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT2
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT3
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  - id: OUT4
+    kind: photodetector
+    ports: null
+    description: ''
+    params: {}
+  edges:
+  - src: N1
+    dst: N2
+  - src: N1
+    dst: N3
+  - src: IN1
+    dst: N1
+  - src: N2
+    dst: OUT1
+  - src: N2
+    dst: OUT2
+  - src: N3
+    dst: OUT3
+  - src: N3
+    dst: OUT4
+  source: motif
+matches:
+- name: mmi_splitter_1x4_tree
+  score: 11.708
+- name: receiver_chain
+  score: 8.278
+- name: edge_mzi_edge
+  score: 7.308
+warnings: []

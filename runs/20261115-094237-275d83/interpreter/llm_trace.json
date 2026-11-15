@@ -1,0 +1,16 @@
+[
+  {
+    "attempt": 0,
+    "raw": "{\"motif\": {\"name\": \"tree\", \"args\": {\"unit\": \"mmi\", \"stages\": 2, \"fanout\": 2, \"ports\": \"1x2\", \"in_kind\": \"edge_coupler\", \"out_kind\": \"photodetector\"}}}",
+    "seconds": 4.733,
+    "usage": {
+      "prompt_tokens": 1958,
+      "prompt_tokens_details": {
+        "cached_tokens": 923
+      },
+      "completion_tokens": 330,
+      "total_tokens": 2288
+    },
+    "ok": true
+  }
+]

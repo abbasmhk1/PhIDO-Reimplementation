@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: phido
+Version: 0.1.0
+Summary: PhIDO rebuild: LLM-assisted photonic IC design pipeline (interpreter + designer first)
+Requires-Python: >=3.10
+Requires-Dist: pydantic>=2
+Requires-Dist: pyyaml
+Requires-Dist: networkx
+Requires-Dist: numpy
+Provides-Extra: layout
+Requires-Dist: gdsfactory>=9; extra == "layout"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Provides-Extra: check
+Requires-Dist: sax; extra == "check"

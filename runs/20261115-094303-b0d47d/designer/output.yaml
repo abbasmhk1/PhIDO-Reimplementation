@@ -1,0 +1,50 @@
+title: An edge coupler feeds a 2x2 MZI with a path length difference of 100 um, and...
+nodes:
+  ec1:
+    component: edge_coupler
+    params: {}
+  mzi1:
+    component: mzi_2x2_heater
+    params:
+      delta_length: 100.0
+  pd1:
+    component: photodetector
+    params: {}
+edges:
+  E1:
+    link: ec1,o1:mzi1,o2
+  E2:
+    link: mzi1,o3:pd1,o1
+choices:
+- node: ec1
+  cell: edge_coupler
+  match: exact
+  score: 6.093
+  alternatives:
+  - directional_coupler
+  - grating_coupler
+  - mmi_2x2
+  ambiguous: false
+  chosen_by: retrieval
+- node: mzi1
+  cell: mzi_2x2_heater
+  match: exact
+  score: 4.146
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_2x2_pndiode
+  - mzi_1x2_pindiode
+  ambiguous: true
+  chosen_by: retrieval
+- node: pd1
+  cell: photodetector
+  match: exact
+  score: 5.102
+  alternatives: []
+  ambiguous: false
+  chosen_by: retrieval
+issues: []
+warnings:
+- 'mzi1: ''mzi'' matched several cells about equally; picked mzi_2x2_heater (others:
+  mzi_2x2_pindiode, mzi_2x2_pndiode, mzi_1x2_pindiode). Name a technology or port
+  count to choose.'

@@ -1,0 +1,91 @@
+title: cascade of 4 mzi
+nodes:
+  IN1:
+    component: edge_coupler
+    params: {}
+  N1:
+    component: mzi_1x2_pindiode
+    params: {}
+  N2:
+    component: mzi_1x2_pindiode
+    params: {}
+  N3:
+    component: mzi_1x2_pindiode
+    params: {}
+  N4:
+    component: mzi_1x2_pindiode
+    params: {}
+  OUT1:
+    component: photodetector
+    params: {}
+edges:
+  E1:
+    link: IN1,o1:N1,o1
+  E2:
+    link: N1,o2:N2,o1
+  E3:
+    link: N2,o2:N3,o1
+  E4:
+    link: N3,o2:N4,o1
+  E5:
+    link: N4,o2:OUT1,o1
+choices:
+- node: IN1
+  cell: edge_coupler
+  match: exact
+  score: 6.093
+  alternatives:
+  - directional_coupler
+  - grating_coupler
+  - mmi_2x2
+  ambiguous: false
+  chosen_by: retrieval
+- node: N1
+  cell: mzi_1x2_pindiode
+  match: exact
+  score: 2.264
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_1x2_heater
+  - mzi_2x2_heater
+  ambiguous: true
+  chosen_by: retrieval
+- node: N2
+  cell: mzi_1x2_pindiode
+  match: exact
+  score: 2.264
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_1x2_heater
+  - mzi_2x2_heater
+  ambiguous: true
+  chosen_by: retrieval
+- node: N3
+  cell: mzi_1x2_pindiode
+  match: exact
+  score: 2.264
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_1x2_heater
+  - mzi_2x2_heater
+  ambiguous: true
+  chosen_by: retrieval
+- node: N4
+  cell: mzi_1x2_pindiode
+  match: exact
+  score: 2.264
+  alternatives:
+  - mzi_2x2_pindiode
+  - mzi_1x2_heater
+  - mzi_2x2_heater
+  ambiguous: true
+  chosen_by: retrieval
+- node: OUT1
+  cell: photodetector
+  match: exact
+  score: 5.102
+  alternatives: []
+  ambiguous: false
+  chosen_by: retrieval
+issues: []
+warnings: []
